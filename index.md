@@ -1,7 +1,9 @@
 ---
 layout: default
-title : Sparkles and Platipuses
+title : Brains!
 ---
+Bicycles and Glitter
+---------------------
 
 Hello Interwebbers!
 
