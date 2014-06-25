@@ -50,7 +50,11 @@
 
       {{ content }}
 
+    {% if page.comments %}
+      {% include comments.html %}
+    {% endif %}
+    
     </div>
-
   </body>
+}
 </html>

@@ -1,6 +1,7 @@
 ---
 layout: default
 short: How to make PyQt/PySide play nice with virtualenv
+comments: True
 ---
 Installing Qt python bindings in virtualenv (Linux)
 ====================================================  
