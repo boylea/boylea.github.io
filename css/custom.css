@@ -1,0 +1,37 @@
+
+body {
+    background-image: url('../images/burried.png');
+    padding-top: 50px;
+}
+
+p {
+    margin-top: 1em;
+    margin-bottom: 2em;
+}
+.main {
+    background: #ebebeb;
+    background-image: url('../images/nice_snow.png');
+    margin-left:18%;
+    margin-right:18%;
+    padding:2em;
+}
+
+.navbar {
+    border-color: #2C3539;
+}
+
+footer{
+    text-align: center;
+}
+
+footer a:link {
+     color: #002E4C;
+}
+
+footer a:hover {
+     color: #fa5705;
+}
+
+footer a:visited {
+     color: #47008F;
+}

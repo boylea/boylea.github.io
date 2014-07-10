@@ -1,4 +1,5 @@
-name: "B & G"
+name: "Ninja Codez"
 permalink: /:title
 pygments: true
 github: [Repository metadata]
+markdown: kramdown
