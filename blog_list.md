@@ -2,7 +2,7 @@
 layout: default
 title : sparkle blog
 ---
-Blogness:
+###Listen in on the ninja chat:
 
 
 {% for post in site.posts %}

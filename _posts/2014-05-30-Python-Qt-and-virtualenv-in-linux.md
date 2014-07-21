@@ -104,5 +104,3 @@ cd into your virtualenv's directory and run:
 To check if you were successful, run `python -c "from PySide import QtCore"`, if you do not receive an import error, you are all good to go.
 
 To install PySide to another virtualenv, simply repeat the last step.
-
-![Meow](http://placekitten.com/g/200/300)
