@@ -46,8 +46,7 @@ others. The implication is that we could lose some frequency components of the
 sound, and not others, to below a hearing threshold. We want to do our best to
 recreate a stimulus as close to a native (non-recording) sound as possible.
 
-[fresp]: http://www.ecoustics.com/articles/understanding-speaker-frequency-
-response/
+[fresp]: http://www.ecoustics.com/articles/understanding-speaker-frequency-response/
 
 The Way It Is
 -------------
