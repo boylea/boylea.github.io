@@ -100,7 +100,7 @@ with much better frequency resolution, and in much less time. Win.
 The following function calculates a dB frequency attenuation vector for a given
 desired output signal, and it's recorded response:
 
-
+{% highlight python %} 
     import numpy as np
     
     def attenuation_curve(signal, resp, fs, calf):
@@ -143,6 +143,7 @@ desired output signal, and it's recorded response:
         diffdB -= diffdB[fq == calf]
     
         return diffdB, fq
+ {% endhighlight %}
 
 This gets me to where I was before, albeit with a better resolution of
 attenuation curve. However, now we have figured out that we can use Fouier
@@ -155,7 +156,7 @@ into the time domain.
 
 Here is a simple function that will do this:
 
-
+{% highlight python %} 
     def multiply_frequencies(signal, fs, attendB):
         """Adjust output signal with sample rate fs, according to calibration curve attendB
     
@@ -178,6 +179,7 @@ Here is a simple function that will do this:
         signal_calibrated = np.fft.irfft(Xadjusted)
     
         return signal_calibrated
+ {% endhighlight %}
 
 This little function has a few short falls, however.
 
@@ -203,7 +205,7 @@ correct frequency steps.
 
 Thus, the previous function becomes:
 
-
+{% highlight python %} 
     from scipy import interpolate
     from spikeylab.tools.audiotools import smooth
     
@@ -247,6 +249,7 @@ Thus, the previous function becomes:
         signal_calibrated = np.fft.irfft(Xadjusted)
         
         return signal_calibrated
+ {% endhighlight %}
     
 
 
@@ -257,7 +260,7 @@ their responses. I think a chirp is most interesting to look at. I also just
 like to say "chirp". Chirp. To keep it simple, I have used the same chirp signal
 for calibration recording and the adjustment test, though this is not necessary.
 
-
+{% highlight python %} 
     from scipy import signal
     import matplotlib.pyplot as plt
     from test.scripts.util import play_record
@@ -333,6 +336,7 @@ for calibration recording and the adjustment test, though this is not necessary.
     plt.title("Corrected Response Signal Spectrogram")
     plt.xlabel("time (s)")
     plt.ylabel("Frequency (Hz)");
+ {% endhighlight %}
 
 
 <img src="../images/dsp_blog_post0_8_0.png" alt="spectrogram"/>
