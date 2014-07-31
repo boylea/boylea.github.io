@@ -367,5 +367,5 @@ Wow, if you made this far, you deserve a cookie! The delicious kind, not the I'm
 Note: A resource that I found useful for understanding the concepts here (and
 the next section especially) was Steven W. Smith's free online book [The
 Scientist and Engineer's Guide to
-Digital Signal Processing](http://www.dspguide.com/pdfbook.htm). Also Thanks to
-Kinga for helping me figure out the math.
+Digital Signal Processing](http://www.dspguide.com/pdfbook.htm). Also, Thanks to
+[Kinga](http://nthturn.com/) for helping me figure out the math.
