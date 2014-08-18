@@ -1,6 +1,6 @@
 ---
 layout: default
-short: Problem Solving and DSP
+short: Problem solving and DSP
 comments: True
 ---
 
