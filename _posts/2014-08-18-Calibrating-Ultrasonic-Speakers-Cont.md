@@ -73,7 +73,7 @@ This sounds great, but you may be wondering "Ok, how do I DO that?", to answer
 that we must introduce a mathmatical operator you may or may not be familiar
 with, called convolution. It was new to me, so I am going to explain it.
 
-Convolution is represented by the $\ast$ symbol in math notation (not to be
+Convolution is represented by the $$\ast$$ symbol in math notation (not to be
 confused with multiplication in code). In it's discrete form, it takes two
 signals and produces a third signal as output. The length of the ouput signal
 will be the addition of the length of the two input signals minus one. There are two ways to think about and implement convolution.
@@ -124,7 +124,6 @@ standard way to define convolution, and in its discrete and finite form, it is
 represented by the equation:
 
 $$(f \ast g)[n] = \sum_{m=0}^{M}(f[n-m]g[m])$$
-
 
 {% highlight python %} 
     def convolve_output(a,b):

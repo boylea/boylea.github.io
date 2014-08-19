@@ -40,3 +40,8 @@ footer a:visited {
 img{
     max-width:100%;
 }
+
+.MathJax .mo,
+.MathJax .mi {
+  color: inherit;
+}
