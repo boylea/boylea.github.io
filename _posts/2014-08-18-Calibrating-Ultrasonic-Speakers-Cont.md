@@ -6,6 +6,8 @@ comments: True
 
 Ultrasonic Speaker Calibration Adventure, Part 2
 =================================================
+<img src="../images/ninjaplant.png" alt="filter efficacy" align="right" style="width: 400px"/>
+
 
 So I had a solution that got the ouput I wanted but it was just too slow. I ran
 some profiling on my code (using [cProfile](https://docs.python.org/2/library/profile.html#module-cProfile) and [RunSnakeRun](http://www.vrplumber.com/programming/runsnakerun/)) and found that most of my time was being spent in my
@@ -16,7 +18,7 @@ processes, and my code executed faster... sometimes. Depending on the type of
 signal I was calibrating, the increase in performance was somewhere between
 1-10x. As it turns out, I should be fixing my shitty, slow algorithm, instead of trying to squeeze better performance out of it.
 
-Hmm, so what was the difference between my stimuli that had startling difference performances? It was taking ~5 seconds to calibrate 200 tone stimuli, and ~5 minutes to calibrate 200 stimuli from a recording file of the same duration. As input to the calibration functions, both types are just represented by a vector of numbers. 
+Hmm, so what was the difference between my stimuli that had startling performance differences? It was taking ~5 seconds to calibrate 200 tone stimuli, and ~5 minutes to calibrate 200 stimuli from a recording file of the same duration. As input to the calibration functions, both types are just represented by a vector of numbers. 
 
 Although they were the same duration, what I had overlooked was
 sampling rate. The sythnthesized stimuli had a constant samplerate that I set,
