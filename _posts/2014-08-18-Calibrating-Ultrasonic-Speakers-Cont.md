@@ -6,7 +6,7 @@ comments: True
 
 Ultrasonic Speaker Calibration Adventure, Part 2
 =================================================
-<img src="../images/ninjaplant.png" alt="filter efficacy" align="right" style="width: 400px"/>
+<img src="../images/ninjaplant.png" alt="filter efficacy" align="right" style="width: 400px" title="Ninjas love to spar in shubbery"/>
 
 
 So I had a solution that got the ouput I wanted but it was just too slow. I ran
