@@ -310,7 +310,7 @@ indicate the measure for the multiplication method from the last post. As you
 can see, the filter kernel just needs to be a minimum size, > 2400, to get the
 best results.
 
-<img src="../images/filter_mse.png" alt="filter efficacy" style="width: 600px" />
+<img src="../images/filter_mse.png" alt="filter efficacy" style="width: 400px" />
 
 I also calculated the MSE of an uncalibrated signal, which came in at 46.63,
 which means that our calibrated signals produce a much more accurate sound. This
