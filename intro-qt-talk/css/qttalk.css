@@ -62,11 +62,11 @@ td {
 }
 
 .past {
-  opacity:0.6;
+  opacity:1;
 }
 
 .future {
-  opacity:0.2;
+  opacity:0.4;
 }
 
 div#spikey-zoom{
@@ -81,6 +81,7 @@ div#dont-do-this, div#bones-browser {
 div#signals-slots, div#slots-example {
   font-size:90%;
 }
+
 
 /* set some styles to show the slideshow normally for browsers we cannot
 support */
