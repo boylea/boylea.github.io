@@ -12,13 +12,15 @@ p {
 .main {
     background: #ebebeb;
     background-image: url('../images/nice_snow.png');
-    margin-left:18%;
-    margin-right:18%;
     padding:2em;
 }
 
 .navbar {
     border-color: #2C3539;
+}
+
+.navbar-inverse .navbar-toggle .icon-bar{
+  background-color: #808080;
 }
 
 footer{
