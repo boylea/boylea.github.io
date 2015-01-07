@@ -96,7 +96,7 @@ Build the egg binary distribution:
 
 cd into your virtualenv's directory and run:
 
-`easy_install .../dist/PySide-1.2.1-py2.7-linux-x86_64.egg`
+`easy_install .../dist/PySide-1.2.1-py2.7-linux-x86_64.egg`  
 `python .../pyside_postinstall.py -install`
 
 (The ellipses are the location of the pyside sources folder you unpacked and built from)
