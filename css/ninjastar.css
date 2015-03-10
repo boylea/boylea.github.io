@@ -1,0 +1,23 @@
+
+body {
+  background-image: url('../images/nice_snow.png');
+}
+
+canvas {
+  border: 1px solid;
+  width: 100%;
+  height: auto;
+  background-color: grey; 
+}
+
+.center {
+  text-align: center;
+}
+
+#citations {
+    background-image: url('../images/burried.png');
+    text-align: center;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
