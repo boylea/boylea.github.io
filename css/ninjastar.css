@@ -2,6 +2,9 @@
 body {
   background-image: url('../images/nice_snow.png');
 }
+body p span {
+  padding: 1em;
+}
 
 canvas {
   border: 1px solid;

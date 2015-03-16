@@ -62,6 +62,10 @@ Game.prototype = {
         } else {
             this.player.draw(screen);
         }
+        if (this.bats.length == 0) {
+            screen.font = '48px sans-serif';
+            screen.fillText('WINNER', screenSize.x/2, screenSize.y/2);
+        }
         for (var i =0; i < this.bats.length; i++) {
             this.bats[i].draw(screen);
         };
