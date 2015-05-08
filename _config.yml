@@ -3,3 +3,7 @@ permalink: /:title
 pygments: true
 github: [Repository metadata]
 markdown: kramdown
+
+collections:
+  talks:
+    output: true

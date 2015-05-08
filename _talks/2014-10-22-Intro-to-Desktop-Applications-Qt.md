@@ -1,5 +1,7 @@
 ---
-short: Talk slides
+date: 2014-10-22
+title: Intro to Desktop Applications
+short: Using Qt and Python to create Desktop Apps
 comments: False
 ---
 
