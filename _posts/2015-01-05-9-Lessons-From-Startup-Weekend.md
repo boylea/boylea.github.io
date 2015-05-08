@@ -37,26 +37,26 @@ Globals by default? That makes me nervous. And I'm just going to avoid anything 
 The point of startup weekend is not to produce beautiful code, it's to get an MVP (Minimum Viable Product). That is what we did. Guy and I stayed until forced out by the venue staff on Saturday, divvying up tasks to go home and complete before the next day. I was adding events to the DB and map, and Guy was to make everything work in mobile. Fuelled by excitement and coffee, we were up until 4.30am finishing our pieces. Later, looking at the code I wrote, there was some slightly cringe-worthy stuff in there, such as this little gem:
 
 {% highlight javascript %} 
-    var showShelters = 1
+var showShelters = 1
 
-    function toggleShelters(){
-      showShelters = !showShelters
-      if (showShelters){
-        sheltersFirebaseRef.on('value', function(dataSnapshot){
-          dataSnapshot.forEach(function(child){
-            shelter = child.val()
-            var marker = shelterMarkerObjects[shelter.name];
-            marker.setVisible(true)
-          })}) 
-      }else{
-        sheltersFirebaseRef.on('value', function(dataSnapshot){
-          dataSnapshot.forEach(function(child){
-            shelter = child.val()
-            var marker = shelterMarkerObjects[shelter.name];
-            marker.setVisible(false)
-          })})
-      }
-    }
+function toggleShelters(){
+  showShelters = !showShelters
+  if (showShelters){
+    sheltersFirebaseRef.on('value', function(dataSnapshot){
+      dataSnapshot.forEach(function(child){
+        shelter = child.val()
+        var marker = shelterMarkerObjects[shelter.name];
+        marker.setVisible(true)
+      })}) 
+  }else{
+    sheltersFirebaseRef.on('value', function(dataSnapshot){
+      dataSnapshot.forEach(function(child){
+        shelter = child.val()
+        var marker = shelterMarkerObjects[shelter.name];
+        marker.setVisible(false)
+      })})
+  }
+}
 {% endhighlight %}
 
 Inconsistent use of semicolons, recursive registering of events each time a toggle button gets pressed, and a fantastically repetitive 'If true then true else false' clause. Yep. I put that code on the internet for other people to see.
@@ -64,12 +64,12 @@ Inconsistent use of semicolons, recursive registering of events each time a togg
 With a little more sleep, you can replace this with:
 
 {% highlight javascript %} 
-    function toggleShelters() {
-      showShelters = !showShelters;
-      for (name in shelterMarkerObjects) {
-        shelterMarkerObjects[name].setVisible(showShelters);
-      }
-    }
+function toggleShelters() {
+  showShelters = !showShelters;
+  for (name in shelterMarkerObjects) {
+    shelterMarkerObjects[name].setVisible(showShelters);
+  }
+}
 {% endhighlight %}
 
 6 - Designers are good

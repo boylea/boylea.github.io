@@ -33,12 +33,12 @@ and this experience very much illustrated this for me. Here is what I replaced
 the beginning of my `multiply_frequencies` code with:
 
 {% highlight python %} 
-    def multiply_frequencies(signal, fs, attendB):
-        npts = len(signal)
-        padto = 1<<(npts-1).bit_length() # next highest power-of-2
-    
-        X = np.fft.rfft(signal, n=padto)
-        ...
+def multiply_frequencies(signal, fs, attendB):
+    npts = len(signal)
+    padto = 1<<(npts-1).bit_length() # next highest power-of-2
+
+    X = np.fft.rfft(signal, n=padto)
+    ...
 {% endhighlight %}
 
 Ahhh Much better, now all my execution times are on the scale of seconds, instead of
@@ -84,35 +84,35 @@ in the (first) input signal you multiply it by each point in the second signal
 and add up all the results in place. For me, it helps to see this in code:
 
 {% highlight python %} 
-    def convolve_input(a,b):
-        output = np.zeros((len(a)+len(b)-1,))
-        for i in range(len(a)):
-            for j in range(len(b)):
-                output[i+j] = output[i+j] + ( a[i] * b[j] )
-        return output
+def convolve_input(a,b):
+    output = np.zeros((len(a)+len(b)-1,))
+    for i in range(len(a)):
+        for j in range(len(b)):
+            output[i+j] = output[i+j] + ( a[i] * b[j] )
+    return output
 
 
-    x = [0, -1, -1.2, 2, 1.4, 1.4, 0.6, 0, -0.5]
-    # h = [1, -0.5, -0.2, -0.1]
-    h = [0.25, 0.25, 0.25, 0.25]
-    
-    y0 = convolve_input(x, h)
-    
-    #####plot results#######
-    col0 = len(x)
-    col1 = len(x) + len(h)
-    colspan = len(x) + len(h) + len(y0)
-    plt.figure(figsize=(20,5))
-    gs = plt.GridSpec(1,colspan)
-    plt.subplot(gs[0,:col0])
-    plt.plot(x, 's', ms=10)
-    plt.ylim(-1.5, 2.5)
-    plt.subplot(gs[0,col0:col1])
-    plt.plot(h, 's', ms=10)
-    plt.ylim(-1.5, 2.5)
-    plt.subplot(gs[0,col1:])
-    plt.plot(y0, 's', ms=10)
-    plt.ylim(-1.5, 2.5)
+x = [0, -1, -1.2, 2, 1.4, 1.4, 0.6, 0, -0.5]
+# h = [1, -0.5, -0.2, -0.1]
+h = [0.25, 0.25, 0.25, 0.25]
+
+y0 = convolve_input(x, h)
+
+#####plot results#######
+col0 = len(x)
+col1 = len(x) + len(h)
+colspan = len(x) + len(h) + len(y0)
+plt.figure(figsize=(20,5))
+gs = plt.GridSpec(1,colspan)
+plt.subplot(gs[0,:col0])
+plt.plot(x, 's', ms=10)
+plt.ylim(-1.5, 2.5)
+plt.subplot(gs[0,col0:col1])
+plt.plot(h, 's', ms=10)
+plt.ylim(-1.5, 2.5)
+plt.subplot(gs[0,col1:])
+plt.plot(y0, 's', ms=10)
+plt.ylim(-1.5, 2.5)
 {% endhighlight %}
 
 <img src="../images/dsp_blog_post1_4_1.png" alt="convolution example"/>
@@ -126,16 +126,16 @@ represented by the equation:
 $$(f \ast g)[n] = \sum_{m=0}^{M}(f[n-m]g[m])$$
 
 {% highlight python %} 
-    def convolve_output(a,b):
-        output = np.zeros((len(a)+len(b)-1,))
-        for i in range(len(output)):
-            for j in range(len(b)):
-                if i-j < 0:
-                    continue
-                if i-j >= len(a):
-                    continue
-                output[i] = output[i] + a[i-j] * b[j]
-        return output
+def convolve_output(a,b):
+    output = np.zeros((len(a)+len(b)-1,))
+    for i in range(len(output)):
+        for j in range(len(b)):
+            if i-j < 0:
+                continue
+            if i-j >= len(a):
+                continue
+            output[i] = output[i] + a[i-j] * b[j]
+    return output
 {% endhighlight %}
 
 Here we are looping over every ouput point, and adding up all points in the
@@ -186,61 +186,61 @@ the vector to create a [causal](http://www.dspguide.com/ch7/1.htm) filter
 
 
 {% highlight python %} 
-    from spikeylab.tools.audiotools import tukey
+from spikeylab.tools.audiotools import tukey
 
-    def impulse_response(genrate, fresponse, frequencies, frange, filter_len=2**14):
-        """
-        Calculate filter kernel from attenuation vector.
-        Attenuation vector should represent magnitude frequency response of system
+def impulse_response(genrate, fresponse, frequencies, frange, filter_len=2**14):
+    """
+    Calculate filter kernel from attenuation vector.
+    Attenuation vector should represent magnitude frequency response of system
+    
+    Args:
+        genrate (int): The generation samplerate at which the test signal was played
+        fresponse (numpy.ndarray): Frequency response of the system in dB, i.e. relative attenuations of frequencies
+        frequencies (numpy.ndarray): corresponding frequencies for the fresponse
+        frange ((int, int)) : the min and max frequencies for which the filter kernel will affect
+        filter_len (int, optional): the desired length for the resultant impulse response
         
-        Args:
-            genrate (int): The generation samplerate at which the test signal was played
-            fresponse (numpy.ndarray): Frequency response of the system in dB, i.e. relative attenuations of frequencies
-            frequencies (numpy.ndarray): corresponding frequencies for the fresponse
-            frange ((int, int)) : the min and max frequencies for which the filter kernel will affect
-            filter_len (int, optional): the desired length for the resultant impulse response
-            
-        Returns:
-            numpy.ndarray : the impulse response
-        """
-    
-        freq = frequencies
-        max_freq = genrate/2+1
-    
-        attenuations = np.zeros_like(fresponse)
-        # add extra points for windowing
-        winsz = 0.05 # percent
-        lowf = max(0, frange[0] - (frange[1] - frange[0])*winsz)
-        highf = min(frequencies[-1], frange[1] + (frange[1] - frange[0])*winsz)
-    
-        # narrow to affect our desired frequency range
-        f0 = (np.abs(freq-lowf)).argmin()
-        f1 = (np.abs(freq-highf)).argmin()
-        fmax = (np.abs(freq-max_freq)).argmin()
-        # also window section
-        attenuations[f0:f1] = fresponse[f0:f1]*tukey(len(fresponse[f0:f1]), winsz)
+    Returns:
+        numpy.ndarray : the impulse response
+    """
 
-        freq_response = 10**((attenuations).astype(float)/20)
-        
-        # can only filter for between 0 and Nyquist
-        freq_response = freq_response[:fmax]
+    freq = frequencies
+    max_freq = genrate/2+1
+
+    attenuations = np.zeros_like(fresponse)
+    # add extra points for windowing
+    winsz = 0.05 # percent
+    lowf = max(0, frange[0] - (frange[1] - frange[0])*winsz)
+    highf = min(frequencies[-1], frange[1] + (frange[1] - frange[0])*winsz)
+
+    # narrow to affect our desired frequency range
+    f0 = (np.abs(freq-lowf)).argmin()
+    f1 = (np.abs(freq-highf)).argmin()
+    fmax = (np.abs(freq-max_freq)).argmin()
+    # also window section
+    attenuations[f0:f1] = fresponse[f0:f1]*tukey(len(fresponse[f0:f1]), winsz)
+
+    freq_response = 10**((attenuations).astype(float)/20)
     
-        impulse_response = np.fft.irfft(freq_response)
-        
-        # rotate to create causal filter
-        impulse_response = np.roll(impulse_response, len(impulse_response)//2)
+    # can only filter for between 0 and Nyquist
+    freq_response = freq_response[:fmax]
+
+    impulse_response = np.fft.irfft(freq_response)
     
-        # truncate
-        if filter_len > len(impulse_response):
-            filter_len = len(impulse_response)
-        startidx = (len(impulse_response)//2)-(filter_len//2)
-        stopidx = (len(impulse_response)//2)+(filter_len//2)
-        impulse_response = impulse_response[startidx:stopidx]
-        
-        # Also window the impulse response
-        impulse_response = impulse_response * tukey(len(impulse_response), 0.05)
+    # rotate to create causal filter
+    impulse_response = np.roll(impulse_response, len(impulse_response)//2)
+
+    # truncate
+    if filter_len > len(impulse_response):
+        filter_len = len(impulse_response)
+    startidx = (len(impulse_response)//2)-(filter_len//2)
+    stopidx = (len(impulse_response)//2)+(filter_len//2)
+    impulse_response = impulse_response[startidx:stopidx]
     
-        return impulse_response
+    # Also window the impulse response
+    impulse_response = impulse_response * tukey(len(impulse_response), 0.05)
+
+    return impulse_response
 {% endhighlight %}
     
 
@@ -257,46 +257,46 @@ all together. Note that this is almost identical to the demo script from the
 previous post, except where noted:
 
 {% highlight python %} 
-    from scipy import signal
-    import matplotlib.pyplot as plt
-    from test.scripts.util import play_record
-    from spikeylab.tools.audiotools import attenuation_curve # defined in previous post
-    
-    out_voltage = 0.65 # amplitude of signal I want to generate
-    mphone_sens = 0.00407 # mV/Pa calibrated micrphone sensitivity (for plotting results)
-    
-    fs = 5e5
-    duration = 0.2 #seconds
-    npts = duration*fs
-    t = np.arange(npts).astype(float)/fs
-    out_signal = signal.chirp(t, f0=5000, f1=100000, t1=duration)
-    # scale to desired output voltage
-    out_signal = out_signal*out_voltage
-    
-    # windowing (taper) to avoid clicks
-    rf_npts = 0.002 * fs
-    wnd = signal.hann(rf_npts*2) # cosine taper
-    out_signal[:rf_npts] = out_signal[:rf_npts] * wnd[:rf_npts]
-    out_signal[-rf_npts:] = out_signal[-rf_npts:] * wnd[rf_npts:]
-    
-    # play signal and record response -- hardware dependent
-    response_signal = play_record(out_signal, fs)
-    
-    # we can use this signal, instead of white noise, 
-    # to generate calibration vector (range limited to chirp sweep frequencies)
-    attendb, freqs = attenuation_curve(out_signal, response_signal, fs, calf=15000)
-    
-    # -----difference from previous post -------
-    filter_kernel = impulse_response(fs, attendb, freqs, frange=(5000,100000))
-    calibrated_signal = signal.fftconvolve(out_signal, filter_kernel) #faster convolution function
-    # remove those 'garbage' points
-    calibrated_signal = calibrated_signal[len(filter_kernel)/2:len(calibrated_signal)-len(filter_kernel)/2 + 1]
-    # ------------------------------------------
-    
-    calibrated_response_signal = play_record(calibrated_signal, fs);
-    
-    ###########################PLOT######################################
-    # see previous post for plotting code 
+from scipy import signal
+import matplotlib.pyplot as plt
+from test.scripts.util import play_record
+from spikeylab.tools.audiotools import attenuation_curve # defined in previous post
+
+out_voltage = 0.65 # amplitude of signal I want to generate
+mphone_sens = 0.00407 # mV/Pa calibrated micrphone sensitivity (for plotting results)
+
+fs = 5e5
+duration = 0.2 #seconds
+npts = duration*fs
+t = np.arange(npts).astype(float)/fs
+out_signal = signal.chirp(t, f0=5000, f1=100000, t1=duration)
+# scale to desired output voltage
+out_signal = out_signal*out_voltage
+
+# windowing (taper) to avoid clicks
+rf_npts = 0.002 * fs
+wnd = signal.hann(rf_npts*2) # cosine taper
+out_signal[:rf_npts] = out_signal[:rf_npts] * wnd[:rf_npts]
+out_signal[-rf_npts:] = out_signal[-rf_npts:] * wnd[rf_npts:]
+
+# play signal and record response -- hardware dependent
+response_signal = play_record(out_signal, fs)
+
+# we can use this signal, instead of white noise, 
+# to generate calibration vector (range limited to chirp sweep frequencies)
+attendb, freqs = attenuation_curve(out_signal, response_signal, fs, calf=15000)
+
+# -----difference from previous post -------
+filter_kernel = impulse_response(fs, attendb, freqs, frange=(5000,100000))
+calibrated_signal = signal.fftconvolve(out_signal, filter_kernel) #faster convolution function
+# remove those 'garbage' points
+calibrated_signal = calibrated_signal[len(filter_kernel)/2:len(calibrated_signal)-len(filter_kernel)/2 + 1]
+# ------------------------------------------
+
+calibrated_response_signal = play_record(calibrated_signal, fs);
+
+###########################PLOT######################################
+# see previous post for plotting code 
 {% endhighlight %}
 
 <img src="../images/dsp_blog_post1_10_0.png" alt="spectrogram" />

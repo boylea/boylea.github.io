@@ -101,48 +101,48 @@ The following function calculates a dB frequency attenuation vector for a given
 desired output signal, and it's recorded response:
 
 {% highlight python %} 
-    import numpy as np
-    
-    def attenuation_curve(signal, resp, fs, calf):
-        """Calculate an attenuation roll-off curve, from a signal and its recording
-    
-        signal : The output signal to the speakers
-        resp : Recorded response for signal
-        fs : Sample rate of input and output signals (should be the same)
-        calf : Frequency for which to use as 0 attenuation
-    
-        returns : attenuation values, frequencies
-        """
-        # remove dc offset
-        resp = resp - np.mean(resp)
-    
-        y = resp
-        x = signal
-    
-        # convert time signals to frequency domain
-        Y = np.fft.rfft(y)
-        X = np.fft.rfft(x)
-    
-        # take the magnitude of signals
-        Ymag = np.sqrt(Y.real**2 + Y.imag**2) # equivalent to abs(Y)
-        Xmag = np.sqrt(X.real**2 + X.imag**2)
-    
-        # convert to decibel scale
-        YmagdB = 20 * np.log10(Ymag)
-        XmagdB = 20 * np.log10(Xmag)
-    
-        # now we can substract to get attenuation curve
-        diffdB = XmagdB - YmagdB
-                        
-        # frequencies present in calibration spectrum
-        npts = len(y)
-        fq = np.arange(npts/2+1)/(float(npts)/fs)
-    
-        # shift by the given calibration frequency to align attenutation
-        # with reference point set by user
-        diffdB -= diffdB[fq == calf]
-    
-        return diffdB, fq
+import numpy as np
+
+def attenuation_curve(signal, resp, fs, calf):
+    """Calculate an attenuation roll-off curve, from a signal and its recording
+
+    signal : The output signal to the speakers
+    resp : Recorded response for signal
+    fs : Sample rate of input and output signals (should be the same)
+    calf : Frequency for which to use as 0 attenuation
+
+    returns : attenuation values, frequencies
+    """
+    # remove dc offset
+    resp = resp - np.mean(resp)
+
+    y = resp
+    x = signal
+
+    # convert time signals to frequency domain
+    Y = np.fft.rfft(y)
+    X = np.fft.rfft(x)
+
+    # take the magnitude of signals
+    Ymag = np.sqrt(Y.real**2 + Y.imag**2) # equivalent to abs(Y)
+    Xmag = np.sqrt(X.real**2 + X.imag**2)
+
+    # convert to decibel scale
+    YmagdB = 20 * np.log10(Ymag)
+    XmagdB = 20 * np.log10(Xmag)
+
+    # now we can substract to get attenuation curve
+    diffdB = XmagdB - YmagdB
+                    
+    # frequencies present in calibration spectrum
+    npts = len(y)
+    fq = np.arange(npts/2+1)/(float(npts)/fs)
+
+    # shift by the given calibration frequency to align attenutation
+    # with reference point set by user
+    diffdB -= diffdB[fq == calf]
+
+    return diffdB, fq
  {% endhighlight %}
 
 This gets me to where I was before, albeit with a better resolution of
@@ -157,28 +157,28 @@ into the time domain.
 Here is a simple function that will do this:
 
 {% highlight python %} 
-    def multiply_frequencies(signal, fs, attendB):
-        """Adjust output signal with sample rate fs, according to calibration curve attendB
+def multiply_frequencies(signal, fs, attendB):
+    """Adjust output signal with sample rate fs, according to calibration curve attendB
+
+    returns calibrated signal
+    """
+    npts = len(signal)
     
-        returns calibrated signal
-        """
-        npts = len(signal)
-        
-        # convert signal from time to frequency domain
-        X = np.fft.rfft(signal)
-         
-        fq = np.arange(npts/2+1)/(float(npts)/fs)
-        
-        # convert from dB to signal amplitude
-        H = 10**((attendB).astype(float)/20)
-        
-        # scale the output signal
-        Xadjusted = X*H
-        
-        # convert back to the time domain
-        signal_calibrated = np.fft.irfft(Xadjusted)
+    # convert signal from time to frequency domain
+    X = np.fft.rfft(signal)
+     
+    fq = np.arange(npts/2+1)/(float(npts)/fs)
     
-        return signal_calibrated
+    # convert from dB to signal amplitude
+    H = 10**((attendB).astype(float)/20)
+    
+    # scale the output signal
+    Xadjusted = X*H
+    
+    # convert back to the time domain
+    signal_calibrated = np.fft.irfft(Xadjusted)
+
+    return signal_calibrated
  {% endhighlight %}
 
 This little function has a few short falls, however.
@@ -206,49 +206,49 @@ correct frequency steps.
 Thus, the previous function becomes:
 
 {% highlight python %} 
-    from scipy import interpolate
-    from spikeylab.tools.audiotools import smooth
+from scipy import interpolate
+from spikeylab.tools.audiotools import smooth
+
+def multiply_frequencies(signal, fs, calibration_frequencies, attendB, frange):
+    """Adjust output signal with sample rate fs, according to calibration curve attendB, with frequencies calibration_frequencies.
+    Restrict calibrated frequencies to frange (low, high)
+
+    returns calibrated signal
+    """
+    npts = len(signal)
     
-    def multiply_frequencies(signal, fs, calibration_frequencies, attendB, frange):
-        """Adjust output signal with sample rate fs, according to calibration curve attendB, with frequencies calibration_frequencies.
-        Restrict calibrated frequencies to frange (low, high)
+    # convert signal from time to frequency domain
+    X = np.fft.rfft(signal)
+
+    # get the indexes of the end points of the frequency range
+    f = np.arange(len(X))/(float(npts)/fs)
+    fidx_low = (np.abs(f-frange[0])).argmin()
+    fidx_high = (np.abs(f-frange[1])).argmin()
     
-        returns calibrated signal
-        """
-        npts = len(signal)
-        
-        # convert signal from time to frequency domain
-        X = np.fft.rfft(signal)
+    # get only those frequencies for which we want to adjust the output signal by
+    roi = f[fidx_low:fidx_high]
     
-        # get the indexes of the end points of the frequency range
-        f = np.arange(len(X))/(float(npts)/fs)
-        fidx_low = (np.abs(f-frange[0])).argmin()
-        fidx_high = (np.abs(f-frange[1])).argmin()
-        
-        # get only those frequencies for which we want to adjust the output signal by
-        roi = f[fidx_low:fidx_high]
-        
-        # interpolate frequencies to match input signal
-        cal_func = interpolate.interp1d(calibration_frequencies, attendB)
-        Hroi = cal_func(roi) # interploate on region of interest
-        
-        # place into a vector of the correct length, with zeros for the frequencies we don't want to affect
-        H = np.zeros((len(X),)) 
-        H[fidx_low:fidx_high] = Hroi
-        
-        # add smoothing to reduce noise and soften edges
-        H = smooth(H)
-        
-        # convert from dB to signal amplitude
-        H = 10**((H).astype(float)/20)
+    # interpolate frequencies to match input signal
+    cal_func = interpolate.interp1d(calibration_frequencies, attendB)
+    Hroi = cal_func(roi) # interploate on region of interest
     
-        # scale the output signal
-        Xadjusted = X*H
+    # place into a vector of the correct length, with zeros for the frequencies we don't want to affect
+    H = np.zeros((len(X),)) 
+    H[fidx_low:fidx_high] = Hroi
     
-        # convert back to the time domain
-        signal_calibrated = np.fft.irfft(Xadjusted)
-        
-        return signal_calibrated
+    # add smoothing to reduce noise and soften edges
+    H = smooth(H)
+    
+    # convert from dB to signal amplitude
+    H = 10**((H).astype(float)/20)
+
+    # scale the output signal
+    Xadjusted = X*H
+
+    # convert back to the time domain
+    signal_calibrated = np.fft.irfft(Xadjusted)
+    
+    return signal_calibrated
  {% endhighlight %}
     
 
@@ -261,81 +261,81 @@ like to say "chirp". Chirp. To keep it simple, I have used the same chirp signal
 for calibration recording and the adjustment test, though this is not necessary.
 
 {% highlight python %} 
-    from scipy import signal
-    import matplotlib.pyplot as plt
-    from test.scripts.util import play_record
-    
-    out_voltage = 0.65 # amplitude of signal I want to generate
-    mphone_sens = 0.00407 # mV/Pa calibrated micrphone sensitivity (for plotting results)
-    
-    fs = 5e5
-    duration = 0.2 #seconds
-    npts = duration*fs
-    t = np.arange(npts).astype(float)/fs
-    out_signal = signal.chirp(t, f0=5000, f1=100000, t1=duration)
-    # scale to desired output voltage
-    out_signal = out_signal*out_voltage
-    
-    # windowing (taper) to avoid clicks
-    rf_npts = 0.002 * fs
-    wnd = signal.hann(rf_npts*2) # cosine taper
-    out_signal[:rf_npts] = out_signal[:rf_npts] * wnd[:rf_npts]
-    out_signal[-rf_npts:] = out_signal[-rf_npts:] * wnd[rf_npts:]
-    
-    # play signal and record response -- hardware dependent
-    response_signal = play_record(out_signal, fs)
-    
-    # we can use this signal, instead of white noise, to generate calibration vector (range limited to chirp sweep frequencies)
-    attendb, freqs = attenuation_curve(out_signal, response_signal, fs, calf=15000)
-    calibrated_signal = multiply_frequencies(out_signal, fs, freqs, attendb, frange=(5000,100000))
-    
-    calibrated_response_signal = play_record(calibrated_signal, fs);
-    
-    ###########################PLOT######################################
-    # now let's take a look at the frequency responses of our signals
-    # convert time domain signals into magnitude of frequency domain with dB scale
-    spectrum_desired = 20 * np.log10(abs(np.fft.rfft(out_signal))/out_voltage)
-    spectrum_response = 20 * np.log10(abs(np.fft.rfft(response_signal))/mphone_sens)
-    spectrum_calibrated_response = 20 * np.log10(abs(np.fft.rfft(calibrated_response_signal))/mphone_sens)
-    spectrum_response[0] = 0;
-    spectrum_calibrated_response[0] = 0;
-    
-    idx = 21000 # focus on the frequency range we want
-    
-    plt.figure(figsize=(20,15))
-    gs = plt.GridSpec(3,2)
-    
-    plt.subplot(gs[0,0])
-    plt.plot(freqs[1:idx], spectrum_desired[1:idx])
-    plt.title("Ouput Signal Spectrum")
-    plt.ylabel("Intensity (dB)")
-    plt.ylim((20, 70))
-    plt.subplot(gs[0,1])
-    plt.specgram(out_signal, Fs=fs);
-    plt.title("Ouput Signal Spectrogram")
-    plt.ylabel("Frequency (Hz)")
-    
-    plt.subplot(gs[1,0])
-    plt.plot(freqs[1:idx], spectrum_response[1:idx])
-    plt.title("Response Signal Spectrum")
-    plt.ylabel("Intensity (dB)")
-    plt.ylim((20, 70))
-    plt.subplot(gs[1,1])
-    plt.specgram(response_signal, Fs=fs);
-    plt.title("Response Signal Spectrogram")
-    plt.ylabel("Frequency (Hz)")
-    
-    plt.subplot(gs[2,0])
-    plt.plot(freqs[1:idx], spectrum_calibrated_response[1:idx])
-    plt.ylabel("Intensity (dB)")
-    plt.ylim((20, 70))
-    plt.title("Corrected Response Signal Spectrum")
-    plt.xlabel("Frequency (Hz)")
-    plt.subplot(gs[2,1])
-    plt.specgram(calibrated_response_signal, Fs=fs);
-    plt.title("Corrected Response Signal Spectrogram")
-    plt.xlabel("time (s)")
-    plt.ylabel("Frequency (Hz)");
+from scipy import signal
+import matplotlib.pyplot as plt
+from test.scripts.util import play_record
+
+out_voltage = 0.65 # amplitude of signal I want to generate
+mphone_sens = 0.00407 # mV/Pa calibrated micrphone sensitivity (for plotting results)
+
+fs = 5e5
+duration = 0.2 #seconds
+npts = duration*fs
+t = np.arange(npts).astype(float)/fs
+out_signal = signal.chirp(t, f0=5000, f1=100000, t1=duration)
+# scale to desired output voltage
+out_signal = out_signal*out_voltage
+
+# windowing (taper) to avoid clicks
+rf_npts = 0.002 * fs
+wnd = signal.hann(rf_npts*2) # cosine taper
+out_signal[:rf_npts] = out_signal[:rf_npts] * wnd[:rf_npts]
+out_signal[-rf_npts:] = out_signal[-rf_npts:] * wnd[rf_npts:]
+
+# play signal and record response -- hardware dependent
+response_signal = play_record(out_signal, fs)
+
+# we can use this signal, instead of white noise, to generate calibration vector (range limited to chirp sweep frequencies)
+attendb, freqs = attenuation_curve(out_signal, response_signal, fs, calf=15000)
+calibrated_signal = multiply_frequencies(out_signal, fs, freqs, attendb, frange=(5000,100000))
+
+calibrated_response_signal = play_record(calibrated_signal, fs);
+
+###########################PLOT######################################
+# now let's take a look at the frequency responses of our signals
+# convert time domain signals into magnitude of frequency domain with dB scale
+spectrum_desired = 20 * np.log10(abs(np.fft.rfft(out_signal))/out_voltage)
+spectrum_response = 20 * np.log10(abs(np.fft.rfft(response_signal))/mphone_sens)
+spectrum_calibrated_response = 20 * np.log10(abs(np.fft.rfft(calibrated_response_signal))/mphone_sens)
+spectrum_response[0] = 0;
+spectrum_calibrated_response[0] = 0;
+
+idx = 21000 # focus on the frequency range we want
+
+plt.figure(figsize=(20,15))
+gs = plt.GridSpec(3,2)
+
+plt.subplot(gs[0,0])
+plt.plot(freqs[1:idx], spectrum_desired[1:idx])
+plt.title("Ouput Signal Spectrum")
+plt.ylabel("Intensity (dB)")
+plt.ylim((20, 70))
+plt.subplot(gs[0,1])
+plt.specgram(out_signal, Fs=fs);
+plt.title("Ouput Signal Spectrogram")
+plt.ylabel("Frequency (Hz)")
+
+plt.subplot(gs[1,0])
+plt.plot(freqs[1:idx], spectrum_response[1:idx])
+plt.title("Response Signal Spectrum")
+plt.ylabel("Intensity (dB)")
+plt.ylim((20, 70))
+plt.subplot(gs[1,1])
+plt.specgram(response_signal, Fs=fs);
+plt.title("Response Signal Spectrogram")
+plt.ylabel("Frequency (Hz)")
+
+plt.subplot(gs[2,0])
+plt.plot(freqs[1:idx], spectrum_calibrated_response[1:idx])
+plt.ylabel("Intensity (dB)")
+plt.ylim((20, 70))
+plt.title("Corrected Response Signal Spectrum")
+plt.xlabel("Frequency (Hz)")
+plt.subplot(gs[2,1])
+plt.specgram(calibrated_response_signal, Fs=fs);
+plt.title("Corrected Response Signal Spectrogram")
+plt.xlabel("time (s)")
+plt.ylabel("Frequency (Hz)");
  {% endhighlight %}
 
 

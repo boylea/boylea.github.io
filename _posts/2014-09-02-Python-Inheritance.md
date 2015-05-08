@@ -12,25 +12,25 @@ So I thought I knew how to use inheritance in Python properly. However, when I h
 When subclassing a class in python, it is almost always necessary to call the constructor of the super class, this can be done with the following:
 
 {% highlight python %} 
-  class MyClass(BaseClass):
-      def __init__(self):
-          super(MyClass, self).__init__()
+class MyClass(BaseClass):
+    def __init__(self):
+        super(MyClass, self).__init__()
 {% endhighlight %}
 
 and in Python 3 you can even just write:
 
 {% highlight python %} 
-    class MyClass(BaseClass):
-        def __init__(self):
-            super()
+class MyClass(BaseClass):
+    def __init__(self):
+        super()
 {% endhighlight %}
 
 Also, the constructor of the base class can be called directly:
 
 {% highlight python %} 
-    class MyClass(BaseClass):
-        def __init__(self):
-            BaseClass.__init__(self)
+class MyClass(BaseClass):
+    def __init__(self):
+        BaseClass.__init__(self)
 {% endhighlight %}
 
 While looking up code on the internet, I have seen plenty examples of both.
@@ -47,9 +47,9 @@ Next method invocation, not super class
 Looking at the following code:
 
 {% highlight python %} 
-    class AClass(object):
-        def __init__(self):
-            super(AClass, self).__init__()
+class AClass(object):
+    def __init__(self):
+        super(AClass, self).__init__()
 {% endhighlight %}
 
 I would have thought the super class superfluous. Since we are inheriting from object, which is the root class of inheritance in python, it will effectively do nothing. WRONG!
@@ -59,28 +59,28 @@ In multiple inheritance (new-style classes), Python assembles the MRO upon decla
 Here is a simple set of classes that uses multiple inheritance:
 
 {% highlight python %} 
-    class A(object):
-      def __init__(self):
+class A(object):
+    def __init__(self):
         print "init A"
         super(A, self).__init__()
 
-    class B(object):
-      def __init__(self):
+class B(object):
+    def __init__(self):
         print "init B"
         super(B, self).__init__()
 
-    class C(A):
-      def __init__(self):
+class C(A):
+    def __init__(self):
         print "init C"
         super(C, self).__init__()
 
-    class D(C, B):
-      def __init__(self):
+class D(C, B):
+    def __init__(self):
         print "init D"
         super(D, self).__init__()
 
-    if __name__ == '__main__':
-      D()
+if __name__ == '__main__':
+    D()
 {% endhighlight %}
 
 The output is as expected:
@@ -95,26 +95,26 @@ The super class of A is object, and [object.__init__()][objectsource] doesn't do
 
 
 {% highlight python %} 
-    class A(object):
-      def __init__(self):
+class A(object):
+    def __init__(self):
         print "init A"
 
-    class B(object):
-      def __init__(self):
+class B(object):
+    def __init__(self):
         print "init B"
 
-    class C(A):
-      def __init__(self):
+class C(A):
+    def __init__(self):
         print "init C"
         super(C, self).__init__()
 
-    class D(C, B):
-      def __init__(self):
+class D(C, B):
+    def __init__(self):
         print "init D"
         super(D, self).__init__()
 
-    if __name__ == '__main__':
-      D()
+if __name__ == '__main__':
+    D()
 {% endhighlight %}
 
     init D
@@ -126,28 +126,28 @@ What happened to `init B`? When the constructor for D gets called it uses the MR
 However, perhaps you didn't think that class you wrote would be used in a multiple inheritance situation, but later that changed. Even more critically, if you are writing a library that other people will use, it could result in unexpected behavior. For example, if someone wrote some library code without the use of super:
 
 {% highlight python %} 
-    class A(object):
-      def __init__(self):
+class A(object):
+    def __init__(self):
         pass
 
-    class C(A):
-      def __init__(self):
+class C(A):
+    def __init__(self):
         A.__init__(self)
 {% endhighlight %}
 
 And you have your own class B that you want to mixin, which you have diligently used super to connect your class hierarchy:
 
 {% highlight python %} 
-    class B(object):
-      def __init__(self):
+class B(object):
+    def __init__(self):
         super(B, self).__init__()
 
-    class D(C, B):
-      def __init__(self):
+class D(C, B):
+    def __init__(self):
         super(D, self).__init__()
 
-    if __name__ == '__main__':
-      D()
+if __name__ == '__main__':
+    D()
 {% endhighlight %}
 
 
@@ -160,13 +160,13 @@ Mo classes, mo problems
 The inverse of the above situation is also true. Say you are using as a subclass, a class that does call super in the constructor:
 
 {% highlight python %} 
-    class A(object):
-      def __init__(self):
+class A(object):
+    def __init__(self):
         print "init A"
         super(A, self).__init__()
 
-    class C(A):
-      def __init__(self):
+class C(A):
+    def __init__(self):
         print "init C"
         super(C, self).__init()
 {% endhighlight %}
@@ -174,18 +174,18 @@ The inverse of the above situation is also true. Say you are using as a subclass
 And you have your own class B that you want to mixin, but you explicitly call the super class's constructor via `__init__` instead:
 
 {% highlight python %} 
-    class B(object):
-      def __init__(self):
+class B(object):
+    def __init__(self):
         print "init B"
 
-    class D(C, B):
-      def __init__(self):
+class D(C, B):
+    def __init__(self):
         print "init D"
         C.__init__()
         B.__init__()
 
-    if __name__ == '__main__':
-      D()
+if __name__ == '__main__':
+    D()
 {% endhighlight %}
 
     init D
@@ -212,26 +212,26 @@ Really, you need to consistently use super, or use it not at all. However, this 
 
 
 {% highlight python %} 
-    class A(object):
-      def save(self):
+class A(object):
+    def save(self):
         super(A, self).save()
         # do additional stuffs...
 
-    class B(object):
-      def save(self):
+class B(object):
+    def save(self):
         super(B, self).save()
         # do additional stuffs...
 
-    class C(A):
-      def save(self):
+class C(A):
+    def save(self):
         super(C, self).save()
         # do additional stuffs...
 
-    class D(C, B):
-        pass
+class D(C, B):
+    pass
 
-    if __name__ == '__main__':
-      D().save()
+if __name__ == '__main__':
+    D().save()
 {% endhighlight %}
 
     ...
@@ -252,28 +252,28 @@ Unfortunately, our troubles do not end there.
 Super falls apart if the methods for your subclasses do not take the same arguments. I'll jump back to using constructor methods since this seems like the most likely scenario:
 
 {% highlight python %} 
-    class A(object):
-      def __init__(self):
+class A(object):
+    def __init__(self):
         print "init A"
         super(A, self).__init__()
 
-    class B(object):
-      def __init__(self, x):
+class B(object):
+    def __init__(self, x):
         print "init B", x
         super(B, self).__init__()
 
-    class C(A):
-      def __init__(self):
+class C(A):
+    def __init__(self):
         print "init C"
         super(C, self).__init__()
 
-    class D(C, B):
-      def __init__(self):
+class D(C, B):
+    def __init__(self):
         print "init D"
         super(D, self).__init__()
 
-    if __name__ == '__main__':
-      D()
+if __name__ == '__main__':
+    D()
 {% endhighlight %}
 
     init D
@@ -304,17 +304,17 @@ While teasing apart the some of the backend code that I had allowed to get mixed
 The Python builtin [type][] function allows you to do this. For example, assuming defined classes A and B, the following definitions for C are equivalent:
 
 {% highlight python %} 
-    # static definition
-    class C(A, B):
-      x = 1
-      def save(self):
+# static definition
+class C(A, B):
+    x = 1
+    def save(self):
         print 'save stuffs'
 
-    # dynamic definition
-    def save(obj):
-      print 'save stuffs'
+# dynamic definition
+def save(obj):
+    print 'save stuffs'
 
-    C = type("C", (A, B), {'x':1, 'save': save})
+C = type("C", (A, B), {'x':1, 'save': save})
 {% endhighlight %}
 
 So I can use different classes B to add to some mixin class A to dynamically. There is one more caveat that I have to work around. I also want to add the mixin class to the base class after I already have an instance of the base class B. So we need to redefine a class's subclasses after it has been instantiated. 
@@ -322,16 +322,16 @@ So I can use different classes B to add to some mixin class A to dynamically. Th
 If I have classes A and B (which may have their own subclasses too):
 
 {% highlight python %} 
-    b = B()
-    # we can make changes to the instance which should still be present
-    # after we redefine b's subclasses
-    b.attr = 'badger'
-    # keep the class name of "B", but add class A to subclasses
-    AB = type("B", (A,B), {})
-    btmemp = AB()
-    # merge mixin instance variables
-    btemp.__dict__.update(b.__dict__)
-    b = btemp
+b = B()
+# we can make changes to the instance which should still be present
+# after we redefine b's subclasses
+b.attr = 'badger'
+# keep the class name of "B", but add class A to subclasses
+AB = type("B", (A,B), {})
+btmemp = AB()
+# merge mixin instance variables
+btemp.__dict__.update(b.__dict__)
+b = btemp
 {% endhighlight %}
 
 Thus, we can effectively introduce a mixin class's methods and properties to a class instance. By merging the __dict__ of the newly instantiated AB class with the existing instance b's __dict__, we get to have any variables defined in the constructor for the mixin, plus our existing state from instance b. We give preference to the existing instance b's variables, if there is a conflict.
