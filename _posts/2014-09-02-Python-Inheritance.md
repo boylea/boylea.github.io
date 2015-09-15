@@ -11,7 +11,7 @@ So I thought I knew how to use inheritance in Python properly. However, when I h
 
 When subclassing a class in python, it is almost always necessary to call the constructor of the super class, this can be done with the following:
 
-{% highlight python %} 
+{% highlight python %}
 class MyClass(BaseClass):
     def __init__(self):
         super(MyClass, self).__init__()
@@ -19,15 +19,15 @@ class MyClass(BaseClass):
 
 and in Python 3 you can even just write:
 
-{% highlight python %} 
+{% highlight python %}
 class MyClass(BaseClass):
     def __init__(self):
-        super()
+        super().__init__()
 {% endhighlight %}
 
 Also, the constructor of the base class can be called directly:
 
-{% highlight python %} 
+{% highlight python %}
 class MyClass(BaseClass):
     def __init__(self):
         BaseClass.__init__(self)
@@ -46,7 +46,7 @@ Next method invocation, not super class
 
 Looking at the following code:
 
-{% highlight python %} 
+{% highlight python %}
 class AClass(object):
     def __init__(self):
         super(AClass, self).__init__()
@@ -58,7 +58,7 @@ In multiple inheritance (new-style classes), Python assembles the MRO upon decla
 
 Here is a simple set of classes that uses multiple inheritance:
 
-{% highlight python %} 
+{% highlight python %}
 class A(object):
     def __init__(self):
         print "init A"
@@ -94,7 +94,7 @@ The output is as expected:
 The super class of A is object, and [object.__init__()][objectsource] doesn't do anything* anyways. So we should be able to leave this out, right? Well...
 
 
-{% highlight python %} 
+{% highlight python %}
 class A(object):
     def __init__(self):
         print "init A"
@@ -121,11 +121,11 @@ if __name__ == '__main__':
     init C
     init A
 
-What happened to `init B`? When the constructor for D gets called it uses the MRO to find which __init__() method it should call, which, in this case, is D itself. After that, to get the other __init__ methods to execute, super needs to be called, in each successive __init__ method. Alternatively, the MRO can be subverted by calling __init__ explicitly, as mentioned at the start up this post. In single inheritance situations, the difference turns out to be inconsequential. 
+What happened to `init B`? When the constructor for D gets called it uses the MRO to find which __init__() method it should call, which, in this case, is D itself. After that, to get the other __init__ methods to execute, super needs to be called, in each successive __init__ method. Alternatively, the MRO can be subverted by calling __init__ explicitly, as mentioned at the start up this post. In single inheritance situations, the difference turns out to be inconsequential.
 
 However, perhaps you didn't think that class you wrote would be used in a multiple inheritance situation, but later that changed. Even more critically, if you are writing a library that other people will use, it could result in unexpected behavior. For example, if someone wrote some library code without the use of super:
 
-{% highlight python %} 
+{% highlight python %}
 class A(object):
     def __init__(self):
         pass
@@ -137,7 +137,7 @@ class C(A):
 
 And you have your own class B that you want to mixin, which you have diligently used super to connect your class hierarchy:
 
-{% highlight python %} 
+{% highlight python %}
 class B(object):
     def __init__(self):
         super(B, self).__init__()
@@ -159,7 +159,7 @@ Mo classes, mo problems
 
 The inverse of the above situation is also true. Say you are using as a subclass, a class that does call super in the constructor:
 
-{% highlight python %} 
+{% highlight python %}
 class A(object):
     def __init__(self):
         print "init A"
@@ -173,7 +173,7 @@ class C(A):
 
 And you have your own class B that you want to mixin, but you explicitly call the super class's constructor via `__init__` instead:
 
-{% highlight python %} 
+{% highlight python %}
 class B(object):
     def __init__(self):
         print "init B"
@@ -202,7 +202,7 @@ How the MRO came to be
 In the old-style classes the MRO was the simple left-right depth first order. They are still the default for python 2.x, for backwards compatibility reasons. All the examples in this post assume new style classes.
 
 Basically, since 2.3, Python has used the [C3 algorithm][C3] to determine the MRO upon class declaration. This is to avoid the perils in the old method with diamond inheritance, and to have a monotonic algorithm. Luckily, the class hierarchies I have to work with aren't too crazy, the only base class shared between the multiply inherited subclasses is object itself. I know that object will come last in the MRO, and subclasses will always precede their parent classes, so I don't have to get into understanding the details of how C3 works. Although, if you want to, you can [read about it][MRO] anyways
-  
+
 I found interesting Guido Van Rossum's account of [why the MRO is the way it is][MROhist].
 
 So Let's just all be super
@@ -211,7 +211,7 @@ So Let's just all be super
 Really, you need to consistently use super, or use it not at all. However, this is not the end of the story, because if you use it *too* consistently you can still run into problems. The above examples all used the init method because since all objects have an init method that should be called on object initiation, so it is a common place where things go wrong. There is nothing special about the __init__ method with respect to inheritance and the MRO, it all applies the same to all methods in a class. So, for instance:
 
 
-{% highlight python %} 
+{% highlight python %}
 class A(object):
     def save(self):
         super(A, self).save()
@@ -251,7 +251,7 @@ Unfortunately, our troubles do not end there.
 
 Super falls apart if the methods for your subclasses do not take the same arguments. I'll jump back to using constructor methods since this seems like the most likely scenario:
 
-{% highlight python %} 
+{% highlight python %}
 class A(object):
     def __init__(self):
         print "init A"
@@ -299,11 +299,11 @@ Compile Time Commitment Issues
 
 You would have thought I had enough of this inheritance hellscape by now, but oh wait, there's more. I present to you dynamic inheritance for those who just can't commit to a class hierarchy at compile time.
 
-While teasing apart the some of the backend code that I had allowed to get mixed up in my GUI code, I ran into the situation of needing dynamic multiple inheritance to fix it. "why why why, would you do that?", is probably what you are thinking. Perhaps I could have designed the code a bit better at the start to avoid this situation (ok, not perhaps... surely). But anyway, I needed to pair up mixin classes with base classes, so I decided to go this route instead of a major refactor. 
+While teasing apart the some of the backend code that I had allowed to get mixed up in my GUI code, I ran into the situation of needing dynamic multiple inheritance to fix it. "why why why, would you do that?", is probably what you are thinking. Perhaps I could have designed the code a bit better at the start to avoid this situation (ok, not perhaps... surely). But anyway, I needed to pair up mixin classes with base classes, so I decided to go this route instead of a major refactor.
 
 The Python builtin [type][] function allows you to do this. For example, assuming defined classes A and B, the following definitions for C are equivalent:
 
-{% highlight python %} 
+{% highlight python %}
 # static definition
 class C(A, B):
     x = 1
@@ -317,11 +317,11 @@ def save(obj):
 C = type("C", (A, B), {'x':1, 'save': save})
 {% endhighlight %}
 
-So I can use different classes B to add to some mixin class A to dynamically. There is one more caveat that I have to work around. I also want to add the mixin class to the base class after I already have an instance of the base class B. So we need to redefine a class's subclasses after it has been instantiated. 
+So I can use different classes B to add to some mixin class A to dynamically. There is one more caveat that I have to work around. I also want to add the mixin class to the base class after I already have an instance of the base class B. So we need to redefine a class's subclasses after it has been instantiated.
 
 If I have classes A and B (which may have their own subclasses too):
 
-{% highlight python %} 
+{% highlight python %}
 b = B()
 # we can make changes to the instance which should still be present
 # after we redefine b's subclasses
@@ -335,6 +335,9 @@ b = btemp
 {% endhighlight %}
 
 Thus, we can effectively introduce a mixin class's methods and properties to a class instance. By merging the __dict__ of the newly instantiated AB class with the existing instance b's __dict__, we get to have any variables defined in the constructor for the mixin, plus our existing state from instance b. We give preference to the existing instance b's variables, if there is a conflict.
+
+
+Thanks to Stefan Loesch for help with a correction.
 
 [supersuper]: https://rhettinger.wordpress.com/2011/05/26/super-considered-super/
 [harmful]: https://fuhm.net/super-harmful/
