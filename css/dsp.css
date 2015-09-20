@@ -1,0 +1,27 @@
+.signal-example img {
+    width: 50%;
+    padding: 10px;
+}
+
+.signal-caption {
+	float: right;
+	width: 50%;
+	margin-top:15%;
+	padding-left:10px;
+}
+
+.decomps{
+	display: table;
+}
+
+.row {
+	display: table-row;
+}
+.img-wrapper {
+	display:table-cell;
+	width: 50%
+}
+
+.equals {
+	display:table-cell;
+}
