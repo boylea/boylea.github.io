@@ -11,10 +11,12 @@
     <link href="/css/bootstrap.css" rel="stylesheet">
     <link href="/css/github.css" rel="stylesheet">
     <link href="/css/custom.css" rel="stylesheet">
+    {% if page.css %}
+      <link href="{{ page.css }}" rel="stylesheet">
+    {% endif %}
   </head>
 
   <body>
-
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container">
         <div class="navbar-header">
@@ -41,11 +43,11 @@
           {{ content }}
 
           <br>
-          
+
           {% if page.comments %}
             {% include comments.html %}
           {% endif %}
-        
+
         </div>
       </div>
     </div>
