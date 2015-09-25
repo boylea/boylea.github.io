@@ -1,22 +1,23 @@
-.signal-example img {
-    width: 50%;
-    padding: 10px;
+
+.vcenter {
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
 }
 
-.signal-caption {
-	float: right;
-	width: 50%;
-	margin-top:15%;
-	padding-left:10px;
+.space {
+	padding-bottom: 1em;
+	padding-top: 1em;
 }
 
 .decomps{
 	display: table;
 }
 
-.row {
+.img-row {
 	display: table-row;
 }
+
 .img-wrapper {
 	display:table-cell;
 	width: 50%

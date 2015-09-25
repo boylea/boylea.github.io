@@ -31,37 +31,41 @@ A signal is a type of physical data that conveys information; a description of h
 
 Examples:
 
-<div class="signal-example">
+<div class='row space'>
+<div class='col-sm-6 vcenter'>
 <img src='../images/dsp/whistle.png'>
-<div class="signal-caption">
+</div><!--
+--><div class='col-sm-6 vcenter'>
 Sound waves are air pressure varying with time
 </div>
 </div>
 
-<div class="signal-example">
+<div class='row space'>
+<div class='col-md-6 vcenter'>
 <img src="../images/dsp/puppy.jpg">
-
-<div class="signal-caption">
+</div><!--
+--><div class='col-sm-6 vcenter'>
 Light intensity (wavelength) varying with space (on our retina) is how we see
 </div>
 </div>
 
-<div class="signal-example">
+<div class='row space'>
+<div class='col-md-6 vcenter'>
 <img src="../images/dsp/temperature.png">
-
-<div class="signal-caption">
+</div><!--
+--><div class='col-sm-6 vcenter'>
 Temperature varying with time
 </div>
 </div>
 
-<div class="signal-example">
+<div class='row space'>
+<div class='col-md-6 vcenter'>
 <img src="../images/dsp/elevation.jpg">
-
-<div class="signal-caption">
-elevation on a hiking trail varies with distance from the trailhead.
+</div><!--
+--><div class='col-sm-6 vcenter'>
+Elevation on a hiking trail varies with distance from the trailhead.
 </div>
 </div>
-
 
 How do we get a digital signal?
 -------------------------------
@@ -127,14 +131,14 @@ This is important because it allows us to decompose signals into simpler signals
 If we have a single N point signal, we can break it down into a summation of N signals, with each signal being all zeros except for a single point which is a point from the original signal:
 
 <div class='decomps'>
-<div class="row">
 <div class='img-wrapper'>
-<img src='../images/dsp/impulse_decomp.png'><li></li>
+<img src='../images/dsp/impulse_decomp.png'>
 </div>
-<div class='equals'>=</div>
+<div class='equals'>
+=
+</div>
 <div class='img-wrapper'>
 <img src='../images/dsp/basic_stem.png'>
-</div>
 </div>
 </div>
 
@@ -153,14 +157,14 @@ We have another useful way of representing a signal. Any signal<sup>2</sup> can 
 Here is a signal that I've assembled myself, using Python:
 
 <div class='decomps'>
-<div class="row">
 <div class='img-wrapper'>
 <img src='../images/dsp/sin_components.png'>
 </div>
-<div class='equals'>=</div>
+<div class='equals'>
+=
+</div>
 <div class='img-wrapper'>
 <img src='../images/dsp/sawtooth.png'>
-</div>
 </div>
 </div>
 
@@ -203,5 +207,5 @@ necessary is a lot of DSP techniques too, so I'm including it. Technically, this
 </div>
 
 <div class="footnote">
-<sup>2</sup> Well, almost any signal. Signals with Corners such as a square waves cannot strictly be formed from a summation of sine waves. However, we can get *really* close. So close that the difference between the two has zero energy. See the [Gibbs phenomena](https://en.wikipedia.org/wiki/Gibbs_phenomenon)
+<sup>2</sup> Well, almost any signal. Signals with Corners such as a square waves cannot strictly be formed from a summation of sine waves. However, we can get *really* close. So close that the difference between the two has zero energy. See the <a href='https://en.wikipedia.org/wiki/Gibbs_phenomenon'>Gibbs phenomena</a>
 </div>
