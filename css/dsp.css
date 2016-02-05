@@ -1,3 +1,8 @@
+audio {
+    display: table;
+    margin: 0 auto;
+    padding-bottom: 1em;
+}
 
 .vcenter {
     display: inline-block;
