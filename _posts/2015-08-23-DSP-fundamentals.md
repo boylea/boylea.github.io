@@ -1,6 +1,6 @@
 ---
 layout: default
-short: DSP Fundamentals
+short: Some of the fundamental concepts underlying all the fields of DSP
 comments: True
 css: /css/dsp.css
 other : someval
