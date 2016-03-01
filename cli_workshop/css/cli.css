@@ -71,9 +71,6 @@ div#cheat-sheet{
   width:1200px;
 }
 
-#update-path{
-    font-size:24px;
-}
 
 #rock-stars{
   float: left;
@@ -98,4 +95,12 @@ support */
 
 .impress-not-supported .fallback-message {
   display: block;
+}
+
+#command-not-found{
+  font-size: 2em;
+}
+
+#set-path{
+  font-size: 0.6em;
 }
