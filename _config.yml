@@ -1,6 +1,6 @@
 name: "Coding With Ninjas"
 permalink: /:title
-pygments: true
+highlighter : pygments
 github: [Repository metadata]
 markdown: kramdown
 
