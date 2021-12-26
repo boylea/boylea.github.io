@@ -3,12 +3,11 @@ layout: default
 title : Brains!
 ---
 
-Coding With Ninjas
+Another software engineer's static site
 -------------------
 
 Stuff I've done or want to share.
 
-<img src="images/ninjaslaptop.jpg" alt="ninjas with laptop" style="width: 400px;" title="An eager pack of problem-solving ninjas"/>
 
 Blog posts:
 

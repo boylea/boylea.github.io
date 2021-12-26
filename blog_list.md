@@ -2,8 +2,7 @@
 layout: default
 title : sparkle blog
 ---
-###Listen in on the ninja chat:
-
+### Blog posts:
 
 {% for post in site.posts %}
 

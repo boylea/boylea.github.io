@@ -6,8 +6,6 @@ comments: True
 
 Ultrasonic Speaker Calibration Adventure, Part 2
 =================================================
-<img src="../images/ninjaplant.png" alt="filter efficacy" align="right" style="width: 400px" title="Ninjas love to spar in shubbery"/>
-
 
 So I had a solution that got the ouput I wanted but it was just too slow. I ran
 some profiling on my code (using [cProfile](https://docs.python.org/2/library/profile.html#module-cProfile) and [RunSnakeRun](http://www.vrplumber.com/programming/runsnakerun/)) and found that most of my time was being spent in my
