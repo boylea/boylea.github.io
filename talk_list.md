@@ -4,7 +4,9 @@ title : Talks
 ---
 ### Slides for talks I've given:
 
-{% for talk in site.talks %}
+{% assign talks = site.talks | sort: 'date' | reverse  %}
+
+{% for talk in talks %}
 
 [{{ talk.title }}]({{ talk.url }})
 ==================================
