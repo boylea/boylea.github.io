@@ -6,5 +6,5 @@ comments: False
 ---
 
 <head>
-<meta http-equiv="refresh" content="0; url=https://blog.newrelic.com/2018/03/12/apache-kafka-event-processing" /> 
+<meta http-equiv="refresh" content="0; url=https://newrelic.com/blog/how-to-relic/apache-kafka-event-processing" />
 </head>
